@@ -3,7 +3,6 @@ dotenv.config();
 
 import app from './app.js';
 import connectDB from './config/database.js';
-import User from './modules/users/user.model.js';
 
 const PORT = process.env.PORT || 4000;
 

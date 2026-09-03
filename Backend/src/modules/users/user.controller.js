@@ -1,4 +1,8 @@
-import { createChildUser, getMyDownline, getUserDownline } from './user.service.js';
+import {
+  createChildUser,
+  getMyDownline,
+  getUserDownline
+} from './user.service.js';
 
 export const createUserController = async (
   req,
@@ -8,11 +12,9 @@ export const createUserController = async (
   try {
     const user = await createChildUser({
       currentUserId: req.user.userId,
-
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
-
       partnership: req.body.partnership,
       commission: req.body.commission,
     });
@@ -28,8 +30,12 @@ export const createUserController = async (
         level: user.level,
         parentId: user.parentId,
         ancestors: user.ancestors,
-        partnership: user.partnership.toString(),
-        commission: user.commission.toString(),
+        partnership: user.partnership,
+        commission: user.commission,
+        partnershipDistribution:
+          user.partnershipDistribution,
+        commissionDistribution:
+          user.commissionDistribution,
         isActive: user.isActive,
       },
     });
@@ -56,8 +62,8 @@ export const getMyDownlineController = async (
         level: user.level,
         parentId: user.parentId,
         ancestors: user.ancestors,
-        partnership: user.partnership.toString(),
-        commission: user.commission.toString(),
+        partnership: user.partnership,
+        commission: user.commission,
         isActive: user.isActive,
         createdAt: user.createdAt,
       })),
@@ -88,8 +94,8 @@ export const getUserDownlineController = async (
         level: user.level,
         parentId: user.parentId,
         ancestors: user.ancestors,
-        partnership: user.partnership.toString(),
-        commission: user.commission.toString(),
+        partnership: user.partnership,
+        commission: user.commission,
         isActive: user.isActive,
         createdAt: user.createdAt,
       })),

@@ -2,7 +2,11 @@ import User from '../users/user.model.js';
 import { hashPassword, comparePassword } from '../../utils/password.js';
 import { generateAccessToken } from '../../utils/jwt.js';
 
-export const registerOwner = async ({ username, email, password }) => {
+export const registerOwner = async ({
+  username,
+  email,
+  password,
+}) => {
   const existingOwner = await User.exists({
     role: 'OWNER',
   });
@@ -10,7 +14,6 @@ export const registerOwner = async ({ username, email, password }) => {
   if (existingOwner) {
     const error = new Error('Owner already exists');
     error.statusCode = 409;
-
     throw error;
   }
 
@@ -19,14 +22,16 @@ export const registerOwner = async ({ username, email, password }) => {
   });
 
   if (existingUser) {
-    const error = new Error('Username or email already exists');
+    const error = new Error(
+      'Username or email already exists'
+    );
     error.statusCode = 409;
-
     throw error;
   }
 
   const passwordHash = await hashPassword(password);
 
+  // Create owner first so we have the owner's _id
   const owner = await User.create({
     username,
     email,
@@ -41,8 +46,29 @@ export const registerOwner = async ({ username, email, password }) => {
     partnership: 100,
     commission: 10,
 
+    // Owner is the root of the hierarchy
+    partnershipDistribution: [],
+    commissionDistribution: [],
+
     isActive: true,
   });
+
+  // Owner needs to be present in its own distribution
+  owner.partnershipDistribution = [
+    {
+      userId: owner._id,
+      value: 100,
+    },
+  ];
+
+  owner.commissionDistribution = [
+    {
+      userId: owner._id,
+      value: 10,
+    },
+  ];
+
+  await owner.save();
 
   return owner;
 };
@@ -83,6 +109,8 @@ export const loginUser = async ({ email, password }) => {
       email: user.email,
       role: user.role,
       level: user.level,
+      partnership: user.partnership,
+      commission: user.commission,
     },
   };
 };

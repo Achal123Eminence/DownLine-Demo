@@ -1,7 +1,6 @@
 import User from './user.model.js';
 import { hashPassword } from '../../utils/password.js';
 import mongoose from 'mongoose';
-import UserAllocation from './user-allocation.model.js';
 
 export const createChildUser = async ({
   currentUserId,
@@ -16,8 +15,7 @@ export const createChildUser = async ({
   try {
     session.startTransaction();
 
-    // 1. Get the current user from database
-
+    // 1. Get current user
     const currentUser = await User.findById(currentUserId)
       .select('+passwordHash')
       .session(session);
@@ -29,38 +27,37 @@ export const createChildUser = async ({
     }
 
     // 2. Check account status
-
     if (!currentUser.isActive) {
-      const error = new Error(
-        'Your account is inactive'
-      );
-
+      const error = new Error('Your account is inactive');
       error.statusCode = 403;
       throw error;
     }
 
     // 3. Level 4 cannot create another user
-
     if (currentUser.level >= 4) {
       const error = new Error(
         'You are not allowed to create another user'
       );
-
       error.statusCode = 403;
       throw error;
     }
 
-    // 4. Calculate child's hierarchy information
-
+    // 4. Calculate child level and role
     const childLevel = currentUser.level + 1;
 
     const roleMap = {
       2: 'SUB_ADMIN',
       3: 'ADMIN',
-      4: 'USER',
+      4: 'AGENT',
     };
 
     const childRole = roleMap[childLevel];
+
+    if (!childRole) {
+      const error = new Error('Invalid child level');
+      error.statusCode = 400;
+      throw error;
+    }
 
     const childParentId = currentUser._id;
 
@@ -70,57 +67,57 @@ export const createChildUser = async ({
     ];
 
     // 5. Check username/email
-
     const existingUser = await User.findOne({
-      $or: [
-        { username },
-        { email },
-      ],
+      $or: [{ username }, { email }],
     }).session(session);
 
     if (existingUser) {
       const error = new Error(
         'Username or email already exists'
       );
-
       error.statusCode = 409;
       throw error;
     }
 
-    // 6. Calculate parent's allocated amounts
+    // 6. Find parent's own current allocation
 
-    const allocations = await UserAllocation.find({
-      parentId: currentUser._id,
-    }).session(session);
-
-    let allocatedPartnership = 0;
-    let allocatedCommission = 0;
-
-    for (const allocation of allocations) {
-      allocatedPartnership += Number(
-        allocation.partnership.toString()
+    const parentPartnershipEntry =
+      currentUser.partnershipDistribution.find(
+        (item) =>
+          item.userId.toString() ===
+          currentUser._id.toString()
       );
 
-      allocatedCommission += Number(
-        allocation.commission.toString()
+    const parentCommissionEntry =
+      currentUser.commissionDistribution.find(
+        (item) =>
+          item.userId.toString() ===
+          currentUser._id.toString()
       );
+
+    if (!parentPartnershipEntry) {
+      const error = new Error(
+        'Parent partnership distribution not found'
+      );
+      error.statusCode = 400;
+      throw error;
     }
 
-    const ownedPartnership = Number(
-      currentUser.partnership.toString()
-    );
-
-    const ownedCommission = Number(
-      currentUser.commission.toString()
-    );
+    if (!parentCommissionEntry) {
+      const error = new Error(
+        'Parent commission distribution not found'
+      );
+      error.statusCode = 400;
+      throw error;
+    }
 
     const availablePartnership =
-      ownedPartnership - allocatedPartnership;
+      parentPartnershipEntry.value;
 
     const availableCommission =
-      ownedCommission - allocatedCommission;
+      parentCommissionEntry.value;
 
-    // 7. Validate requested partnership
+    // 7. Validate partnership
 
     if (partnership > availablePartnership) {
       const error = new Error(
@@ -131,7 +128,7 @@ export const createChildUser = async ({
       throw error;
     }
 
-    // 8. Validate requested commission
+    // 8. Validate commission
 
     if (commission > availableCommission) {
       const error = new Error(
@@ -142,15 +139,56 @@ export const createChildUser = async ({
       throw error;
     }
 
-    // 9. Hash password
+    // Generate child ID before creating distribution
+    const childId = new mongoose.Types.ObjectId();
+
+    // 9. Build partnership distribution
+
+    const childPartnershipDistribution =
+      currentUser.partnershipDistribution.map(
+        (item) => {
+          const isCurrentUser =
+            item.userId.toString() ===
+            currentUser._id.toString();
+
+          return {
+            userId: item.userId,
+            value: isCurrentUser
+              ? item.value - partnership
+              : item.value,
+          };
+        }
+      );
+
+    childPartnershipDistribution.push({
+      userId: childId,
+      value: partnership,
+    });
+
+    // 10. Build commission distribution
+
+    const childCommissionDistribution =
+      currentUser.commissionDistribution.map((item) => ({
+        userId: item.userId,
+        value: item.value,
+      }));
+
+    childCommissionDistribution.push({
+      userId: childId,
+      value: Number(commission.toFixed(2)),
+    });
+
+    // 11. Hash password
 
     const passwordHash = await hashPassword(password);
 
-    // 10. Create child user
+    // 12. Create child
 
     const [childUser] = await User.create(
       [
         {
+          _id: childId,
+
           username,
           email,
           passwordHash,
@@ -164,28 +202,19 @@ export const createChildUser = async ({
           partnership,
           commission,
 
+          partnershipDistribution:
+            childPartnershipDistribution,
+
+          commissionDistribution:
+            childCommissionDistribution,
+
           isActive: true,
         },
       ],
       { session }
     );
 
-    // 11. Create allocation record
-
-    await UserAllocation.create(
-      [
-        {
-          parentId: currentUser._id,
-          childId: childUser._id,
-
-          partnership,
-          commission,
-        },
-      ],
-      { session }
-    );
-
-    // 12. Commit transaction
+    // 13. Commit transaction
 
     await session.commitTransaction();
 

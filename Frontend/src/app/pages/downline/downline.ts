@@ -74,7 +74,7 @@ export class Downline implements OnInit{
         return 'Admin';
 
       case 3:
-        return 'User';
+        return 'Agent';
 
       default:
         return '';

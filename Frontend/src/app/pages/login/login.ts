@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Api } from '../../services/api';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   imports: [ReactiveFormsModule],
@@ -49,14 +50,29 @@ export class Login {
         );
         
         this.isLoading = false;
-        this.router.navigate(['/downline']);
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful',
+          timer: 1000,
+          text: 'Welcome back!',
+          confirmButtonText: 'Continue'
+        }).then(() => {
+          this.router.navigate(['/downline']);
+        });
       },
 
       error: (error) => {
         this.isLoading = false;
 
-        this.errorMessage =
-          error.error?.message || 'Login failed. Please try again.';
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          timer: 1000,
+          text:
+            error.error?.message ||
+            'Invalid email or password.',
+          confirmButtonText: 'Try Again'
+        });
       },
     });
   }

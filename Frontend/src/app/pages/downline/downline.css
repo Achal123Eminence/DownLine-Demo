@@ -107,3 +107,31 @@ td {
   color: #c62828;
   border-radius: 5px;
 }
+
+.user-info-bar {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-info .label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.user-info .value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+}

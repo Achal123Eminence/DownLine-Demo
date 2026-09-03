@@ -1,5 +1,24 @@
 import mongoose from 'mongoose';
 
+const distributionSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+
+    value: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
 const userSchema = new mongoose.Schema(
   {
     username: {
@@ -28,7 +47,7 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["OWNER", "SUB_ADMIN", "ADMIN", "USER"],
+      enum: ['OWNER', 'SUB_ADMIN', 'ADMIN', 'AGENT'],
       required: true,
     },
 
@@ -41,29 +60,43 @@ const userSchema = new mongoose.Schema(
 
     parentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       default: null,
     },
 
     ancestors: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
       },
     ],
 
+    // Amount this user received from its parent
     partnership: {
-      type: mongoose.Schema.Types.Decimal128,
-      default: 0,
+      type: Number,
+      required: true,
       min: 0,
       max: 100,
     },
 
+    // Amount this user received from its parent
     commission: {
-      type: mongoose.Schema.Types.Decimal128,
-      default: 0,
+      type: Number,
+      required: true,
       min: 0,
       max: 100,
+    },
+
+    // Tracks partnership distribution for THIS user's hierarchy node
+    partnershipDistribution: {
+      type: [distributionSchema],
+      default: [],
+    },
+
+    // Tracks commission distribution for THIS user's hierarchy node
+    commissionDistribution: {
+      type: [distributionSchema],
+      default: [],
     },
 
     isActive: {
@@ -81,5 +114,6 @@ userSchema.index({ ancestors: 1 });
 userSchema.index({ level: 1 });
 userSchema.index({ parentId: 1, level: 1 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
+
 export default User;

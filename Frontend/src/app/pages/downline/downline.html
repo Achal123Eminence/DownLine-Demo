@@ -30,6 +30,23 @@
 
   @if (!isLoading && !errorMessage) {
 
+    <div class="user-info-bar">
+      <div class="user-info">
+        <span class="label">Username</span>
+        <span class="value">{{ currentUser?.username }}</span>
+      </div>
+    
+      <div class="user-info">
+        <span class="label">Partnership</span>
+        <span class="value">{{ currentUser?.partnership }}%</span>
+      </div>
+    
+      <div class="user-info">
+        <span class="label">Commission</span>
+        <span class="value">{{ currentUser?.commission }}%</span>
+      </div>
+    </div>
+
     @if (users.length > 0) {
 
       <div class="table-container">

@@ -41,6 +41,8 @@
           formControlName="username"
           placeholder="Enter username"
           autocomplete="username"
+          (keydown)="preventInvalidUsername($event)"
+          (paste)="preventInvalidUsernamePaste($event)"
         />
 
         @if (
@@ -164,8 +166,10 @@
           formControlName="partnership"
           min="0"
           max="100"
-          step="0.01"
+          step="1"
           placeholder="Enter partnership percentage"
+          (keydown)="preventNegative($event)"
+          (paste)="preventInvalidNumberPaste($event)"
         />
 
         @if (
@@ -185,9 +189,19 @@
             </small>
           }
 
-          @if (createUserForm.controls.partnership.hasError('max')) {
+          <!-- @if (createUserForm.controls.partnership.hasError('max')) {
             <small class="field-error">
               Partnership cannot exceed 100%.
+            </small>
+          } -->
+          @if (createUserForm.controls.partnership.hasError('wholeNumber')) {
+            <small class="field-error">
+              Partnership must be a whole number.
+            </small>
+          }
+          @if (createUserForm.controls.partnership.hasError('insufficientPartnership')) {
+            <small class="field-error">
+              Partnership cannot exceed your available {{ currentUser.partnership }}%.
             </small>
           }
 
@@ -211,6 +225,8 @@
           max="100"
           step="0.01"
           placeholder="Enter commission percentage"
+          (keydown)="preventNegative($event)"
+          (paste)="preventInvalidNumberPaste($event)"
         />
 
         @if (
@@ -236,6 +252,16 @@
             </small>
           }
 
+          @if (createUserForm.controls.commission.hasError('decimalPlaces')) {
+            <small class="field-error">
+              Commission can have maximum 2 decimal places.
+            </small>
+          }
+          @if (createUserForm.controls.commission.hasError('insufficientCommission')) {
+            <small class="field-error">
+              Commission cannot exceed your available {{ currentUser.commission }}%.
+            </small>
+          }
         }
 
       </div>

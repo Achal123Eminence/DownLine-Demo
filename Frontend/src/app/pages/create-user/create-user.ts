@@ -1,9 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Api } from '../../services/api';
 import { Header } from '../../shared/header/header';
 import { Footer } from '../../shared/footer/footer';
+import Swal from 'sweetalert2';
 
 @Component({
   imports: [ReactiveFormsModule, Header, Footer],
@@ -21,6 +22,61 @@ export class CreateUser {
   errorMessage = '';
   successMessage = '';
   currentUser: any = null;
+
+  private wholeNumberValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+    const value = control.value;
+
+    if (value === null || value === '') {
+      return null;
+    }
+
+    return Number.isInteger(Number(value))
+      ? null
+      : { wholeNumber: true };
+  }
+
+  private twoDecimalValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+    const value = control.value;
+
+    if (value === null || value === '') {
+      return null;
+    }
+
+    const stringValue = String(value);
+
+    return /^\d+(\.\d{1,2})?$/.test(stringValue)
+      ? null
+      : { decimalPlaces: true };
+  }
+
+  private partnershipAvailableValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+    if (!this.currentUser || control.value === null || control.value === '') {
+      return null;
+    }
+
+    return Number(control.value) > this.currentUser.partnership
+      ? { insufficientPartnership: true }
+      : null;
+  }
+
+  private commissionAvailableValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+    if (!this.currentUser || control.value === null || control.value === '') {
+      return null;
+    }
+
+    return Number(control.value) > this.currentUser.commission
+      ? { insufficientCommission: true }
+      : null;
+  }
+
   createUserForm = this.fb.nonNullable.group({
     username: [
       '',
@@ -53,7 +109,9 @@ export class CreateUser {
       [
         Validators.required,
         Validators.min(0),
-        Validators.max(100)
+        Validators.max(100),
+        this.wholeNumberValidator.bind(this),
+        this.partnershipAvailableValidator.bind(this),
       ]
     ],
 
@@ -62,7 +120,9 @@ export class CreateUser {
       [
         Validators.required,
         Validators.min(0),
-        Validators.max(100)
+        Validators.max(100),
+        this.twoDecimalValidator.bind(this),
+        this.commissionAvailableValidator.bind(this)
       ]
     ]
   });
@@ -72,6 +132,8 @@ export class CreateUser {
     if (storedUser) {
       this.currentUser = JSON.parse(storedUser);
     }
+    this.createUserForm.controls.partnership.updateValueAndValidity();
+    this.createUserForm.controls.commission.updateValueAndValidity();
   }
 
   get createRole(): string {
@@ -113,11 +175,15 @@ export class CreateUser {
 
         this.isLoading = false;
 
-        this.successMessage =
-          response.message || 'User created successfully';
-
-        // Go back to downline after successful creation
-        this.router.navigate(['/downline']);
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          timer: 1000,
+          text: response.message || 'User created successfully',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          this.router.navigate(['/downline']);
+        });
       },
 
       error: (error) => {
@@ -126,14 +192,63 @@ export class CreateUser {
 
         this.isLoading = false;
 
-        this.errorMessage =
-          error.error?.message ||
-          'Unable to create user. Please try again.';
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          timer: 1000,
+          text: error.error?.message || 'Unable to create user. Please try again.',
+          confirmButtonText: 'OK'
+        });
       }
     });
   }
 
   cancel() {
     this.router.navigate(['/downline']);
+  }
+
+  preventNegative(event: KeyboardEvent) {
+    if (
+      event.key === '-' ||
+      event.key === 'e' ||
+      event.key === 'E'
+    ) {
+      event.preventDefault();
+    }
+  }
+
+  preventInvalidNumberPaste(event: ClipboardEvent) {
+    const pastedText = event.clipboardData?.getData('text') ?? '';
+
+    if (!/^\d*\.?\d*$/.test(pastedText)) {
+      event.preventDefault();
+    }
+  }
+
+  preventInvalidUsername(event: KeyboardEvent) {
+    const allowedKeys = [
+      'Backspace',
+      'Delete',
+      'ArrowLeft',
+      'ArrowRight',
+      'Tab'
+    ];
+
+    if (allowedKeys.includes(event.key)) {
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_-]$/.test(event.key)) {
+      event.preventDefault();
+    }
+  }
+
+  preventInvalidUsernamePaste(event: ClipboardEvent) {
+    const pastedText =
+      event.clipboardData?.getData('text') ?? '';
+
+    if (!/^[a-zA-Z0-9_-]+$/.test(pastedText)) {
+      event.preventDefault();
+    }
   }
 }

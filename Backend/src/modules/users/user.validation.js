@@ -19,12 +19,16 @@ export const createUserSchema = Joi.object({
     .max(72)
     .required(),
 
+  // Partnership must always be a whole number
   partnership: Joi.number()
+    .integer()
     .min(0)
     .max(100)
     .required(),
 
+  // Commission can have maximum 2 decimal places
   commission: Joi.number()
+    .precision(2)
     .min(0)
     .max(100)
     .required(),
