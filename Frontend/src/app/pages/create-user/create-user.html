@@ -1,0 +1,276 @@
+<app-header></app-header>
+
+<main class="create-user-page">
+
+  <div class="page-header">
+    <div>
+      <h1>Create User</h1>
+      <p>Create a new {{ createRole }} under your account</p>
+    </div>
+  </div>
+
+  @if (errorMessage) {
+    <div class="error-message">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (successMessage) {
+    <div class="success-message">
+      {{ successMessage }}
+    </div>
+  }
+
+  <div class="form-container">
+
+    <form
+      [formGroup]="createUserForm"
+      (ngSubmit)="onSubmit()"
+    >
+
+      <!-- Username -->
+      <div class="form-group">
+
+        <label for="username">
+          Username
+        </label>
+
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          placeholder="Enter username"
+          autocomplete="username"
+        />
+
+        @if (
+          createUserForm.controls.username.touched &&
+          createUserForm.controls.username.invalid
+        ) {
+
+          @if (createUserForm.controls.username.hasError('required')) {
+            <small class="field-error">
+              Username is required.
+            </small>
+          }
+
+          @if (createUserForm.controls.username.hasError('minlength')) {
+            <small class="field-error">
+              Username must be at least 3 characters.
+            </small>
+          }
+
+          @if (createUserForm.controls.username.hasError('maxlength')) {
+            <small class="field-error">
+              Username cannot exceed 30 characters.
+            </small>
+          }
+
+        }
+
+      </div>
+
+
+      <!-- Email -->
+      <div class="form-group">
+
+        <label for="email">
+          Email
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="Enter email"
+          autocomplete="email"
+        />
+
+        @if (
+          createUserForm.controls.email.touched &&
+          createUserForm.controls.email.invalid
+        ) {
+
+          @if (createUserForm.controls.email.hasError('required')) {
+            <small class="field-error">
+              Email is required.
+            </small>
+          }
+
+          @if (createUserForm.controls.email.hasError('email')) {
+            <small class="field-error">
+              Please enter a valid email address.
+            </small>
+          }
+
+        }
+
+      </div>
+
+
+      <!-- Password -->
+      <div class="form-group">
+
+        <label for="password">
+          Password
+        </label>
+
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Enter password"
+          autocomplete="new-password"
+        />
+
+        @if (
+          createUserForm.controls.password.touched &&
+          createUserForm.controls.password.invalid
+        ) {
+
+          @if (createUserForm.controls.password.hasError('required')) {
+            <small class="field-error">
+              Password is required.
+            </small>
+          }
+
+          @if (createUserForm.controls.password.hasError('minlength')) {
+            <small class="field-error">
+              Password must be at least 8 characters.
+            </small>
+          }
+
+          @if (createUserForm.controls.password.hasError('maxlength')) {
+            <small class="field-error">
+              Password cannot exceed 72 characters.
+            </small>
+          }
+
+        }
+
+      </div>
+
+
+      <!-- Partnership -->
+      <div class="form-group">
+
+        <label for="partnership">
+          Partnership (%)
+        </label>
+
+        <input
+          id="partnership"
+          type="number"
+          formControlName="partnership"
+          min="0"
+          max="100"
+          step="0.01"
+          placeholder="Enter partnership percentage"
+        />
+
+        @if (
+          createUserForm.controls.partnership.touched &&
+          createUserForm.controls.partnership.invalid
+        ) {
+
+          @if (createUserForm.controls.partnership.hasError('required')) {
+            <small class="field-error">
+              Partnership is required.
+            </small>
+          }
+
+          @if (createUserForm.controls.partnership.hasError('min')) {
+            <small class="field-error">
+              Partnership cannot be less than 0%.
+            </small>
+          }
+
+          @if (createUserForm.controls.partnership.hasError('max')) {
+            <small class="field-error">
+              Partnership cannot exceed 100%.
+            </small>
+          }
+
+        }
+
+      </div>
+
+
+      <!-- Commission -->
+      <div class="form-group">
+
+        <label for="commission">
+          Commission (%)
+        </label>
+
+        <input
+          id="commission"
+          type="number"
+          formControlName="commission"
+          min="0"
+          max="100"
+          step="0.01"
+          placeholder="Enter commission percentage"
+        />
+
+        @if (
+          createUserForm.controls.commission.touched &&
+          createUserForm.controls.commission.invalid
+        ) {
+
+          @if (createUserForm.controls.commission.hasError('required')) {
+            <small class="field-error">
+              Commission is required.
+            </small>
+          }
+
+          @if (createUserForm.controls.commission.hasError('min')) {
+            <small class="field-error">
+              Commission cannot be less than 0%.
+            </small>
+          }
+
+          @if (createUserForm.controls.commission.hasError('max')) {
+            <small class="field-error">
+              Commission cannot exceed 100%.
+            </small>
+          }
+
+        }
+
+      </div>
+
+
+      <!-- Buttons -->
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="cancel-button"
+          (click)="cancel()"
+          [disabled]="isLoading"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="submit-button"
+          [disabled]="isLoading"
+        >
+          @if (isLoading) {
+            Creating...
+          } @else {
+            Create {{ createRole }}
+          }
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</main>
+
+<app-footer></app-footer>

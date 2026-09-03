@@ -1,0 +1,100 @@
+<app-header></app-header>
+
+<main class="downline-page">
+
+  <div class="page-header">
+    <div>
+      <h1>Downline</h1>
+      <p>Manage your downline users</p>
+    </div>
+
+    @if (canCreateUser) {
+      <button
+        class="add-button"
+        (click)="addUser()"
+      >
+        + Add {{ createRole }}
+      </button>
+    }
+  </div>
+
+  @if (isLoading) {
+    <p class="message">Loading...</p>
+  }
+
+  @if (errorMessage) {
+    <p class="error-message">
+      {{ errorMessage }}
+    </p>
+  }
+
+  @if (!isLoading && !errorMessage) {
+
+    @if (users.length > 0) {
+
+      <div class="table-container">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Level</th>
+              <th>Partnership</th>
+              <th>Commission</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            @for (user of users; track user.id) {
+
+              <tr>
+
+                <td class="user-row" (click)="openDownline(user.id)">{{ user.username }}</td>
+
+                <td>{{ user.email }}</td>
+
+                <td>{{ user.role }}</td>
+
+                <td>{{ user.level }}</td>
+
+                <td>{{ user.partnership }}%</td>
+
+                <td>{{ user.commission }}%</td>
+
+                <td>
+                  <span
+                    [class.active]="user.isActive"
+                    [class.inactive]="!user.isActive"
+                  >
+                    {{ user.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    } @else {
+
+      <div class="empty">
+        No downline users found.
+      </div>
+
+    }
+
+  }
+
+</main>
+
+<app-footer></app-footer>
