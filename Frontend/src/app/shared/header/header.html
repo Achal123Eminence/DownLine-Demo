@@ -1,15 +1,60 @@
 <header class="header">
-  <div class="logo">
-    Downline System
+
+  <div class="header-left">
+    <a class="brand" routerLink="/downline">
+      <div class="brand-icon">
+        D
+      </div>
+
+      <div class="brand-text">
+        <span class="brand-name">Downline</span>
+        <span class="brand-subtitle">Management System</span>
+      </div>
+    </a>
   </div>
 
-  <nav>
-    <a routerLink="/downline">
-      Downline
+  <nav class="navigation">
+
+    <a
+      routerLink="/downline"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="nav-link"
+    >
+      <i class="bi bi-diagram-3"></i>
+      <span>Downline</span>
     </a>
 
-    <button (click)="logout()">
-      Logout
-    </button>
+    <div class="user-menu">
+
+      <div class="user-info">
+        <div class="user-avatar">
+          {{ username.charAt(0).toUpperCase() }}
+        </div>
+
+        <div class="user-details">
+          <span class="username">
+            {{ username }}
+          </span>
+
+          <span class="user-role">
+            {{ role }}
+          </span>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="logout-button"
+        (click)="logout()"
+        title="Logout"
+      >
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Logout</span>
+      </button>
+
+    </div>
+
   </nav>
+
 </header>
