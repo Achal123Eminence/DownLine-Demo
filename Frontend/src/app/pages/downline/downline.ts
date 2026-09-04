@@ -86,6 +86,15 @@ export class Downline implements OnInit{
   }
 
   openDownline(userId: string) {
-    this.router.navigate(['/downline', userId]);
+    this.api.getUserDownline(userId).subscribe({
+      next: (response: any) => {
+        if (response.data?.length > 0) {
+          this.router.navigate(['/downline', userId]);
+        }
+      },
+      error: (error) => {
+        console.error('Unable to check downline:', error);
+      }
+    });
   }
 }

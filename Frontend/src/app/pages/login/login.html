@@ -28,21 +28,23 @@
 
       <div class="form-group">
         <label for="password">Password</label>
-
-        <input
-          id="password"
-          type="password"
-          formControlName="password"
-          placeholder="Enter your password"
-        />
-
+      
+        <div class="password-wrapper">
+          <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password"
+            placeholder="Enter your password" />
+      
+          <button type="button" class="eye-button" (click)="showPassword = !showPassword">
+            <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+        </div>
+      
         @if (
-          loginForm.controls.password.touched &&
-          loginForm.controls.password.invalid
+        loginForm.controls.password.touched &&
+        loginForm.controls.password.invalid
         ) {
-          <small class="error">
-            Password is required.
-          </small>
+        <small class="error">
+          Password is required.
+        </small>
         }
       </div>
 

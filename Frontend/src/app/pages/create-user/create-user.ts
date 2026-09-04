@@ -22,6 +22,8 @@ export class CreateUser {
   errorMessage = '';
   successMessage = '';
   currentUser: any = null;
+  showPassword = false;
+  showConfirmPassword = false;
 
   private wholeNumberValidator(
     control: AbstractControl
@@ -83,7 +85,8 @@ export class CreateUser {
       [
         Validators.required,
         Validators.minLength(3),
-        Validators.maxLength(30)
+        Validators.maxLength(30),
+        this.usernameStartValidator.bind(this)
       ]
     ],
 
@@ -91,7 +94,8 @@ export class CreateUser {
       '',
       [
         Validators.required,
-        Validators.email
+        Validators.email,
+        Validators.maxLength(50)
       ]
     ],
 
@@ -100,7 +104,15 @@ export class CreateUser {
       [
         Validators.required,
         Validators.minLength(8),
-        Validators.maxLength(72)
+        Validators.maxLength(72),
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/)
+      ]
+    ],
+
+    confirmPassword: [
+      '',
+      [
+        Validators.required
       ]
     ],
 
@@ -125,6 +137,9 @@ export class CreateUser {
         this.commissionAvailableValidator.bind(this)
       ]
     ]
+  },
+  {
+    validators: this.passwordMatchValidator.bind(this)
   });
 
   ngOnInit() {
@@ -147,7 +162,7 @@ export class CreateUser {
         return 'Admin';
 
       case 3:
-        return 'User';
+        return 'Agent';
 
       default:
         return '';
@@ -165,7 +180,9 @@ export class CreateUser {
     this.errorMessage = '';
     this.successMessage = '';
 
-    const payload = this.createUserForm.getRawValue();
+    const { confirmPassword, ...payload } = this.createUserForm.getRawValue();
+
+    // const payload = this.createUserForm.getRawValue();
 
     this.api.createUser(payload).subscribe({
 
@@ -250,5 +267,35 @@ export class CreateUser {
     if (!/^[a-zA-Z0-9_-]+$/.test(pastedText)) {
       event.preventDefault();
     }
+  }
+
+  private passwordMatchValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+
+    const password = control.get('password')?.value;
+    const confirmPassword = control.get('confirmPassword')?.value;
+
+    if (!password || !confirmPassword) {
+      return null;
+    }
+
+    return password === confirmPassword
+      ? null
+      : { passwordMismatch: true };
+  }
+
+  private usernameStartValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+    const value = control.value;
+
+    if (!value) {
+      return null;
+    }
+
+    return /^[a-zA-Z]/.test(value)
+      ? null
+      : { usernameStart: true };
   }
 }

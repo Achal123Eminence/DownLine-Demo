@@ -67,7 +67,12 @@
               Username cannot exceed 30 characters.
             </small>
           }
-
+          
+          @if (createUserForm.controls.username.hasError('usernameStart')) {
+          <small class="field-error">
+            Username must start with a letter.
+          </small>
+          }
         }
 
       </div>
@@ -105,6 +110,11 @@
             </small>
           }
 
+          @if (createUserForm.controls.email.hasError('maxlength')) {
+            <small class="field-error">
+              Email cannot exceed 50 characters.
+            </small>
+          }
         }
 
       </div>
@@ -112,44 +122,84 @@
 
       <!-- Password -->
       <div class="form-group">
-
         <label for="password">
           Password
         </label>
-
-        <input
-          id="password"
-          type="password"
-          formControlName="password"
-          placeholder="Enter password"
-          autocomplete="new-password"
-        />
-
+      
+        <div class="password-input-wrapper">
+          <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password"
+            placeholder="Enter password" autocomplete="new-password" />
+      
+          <button type="button" class="password-toggle" (click)="showPassword = !showPassword" tabindex="-1">
+            <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+        </div>
+      
         @if (
-          createUserForm.controls.password.touched &&
-          createUserForm.controls.password.invalid
+        createUserForm.controls.password.touched &&
+        createUserForm.controls.password.invalid
         ) {
-
-          @if (createUserForm.controls.password.hasError('required')) {
-            <small class="field-error">
-              Password is required.
-            </small>
-          }
-
-          @if (createUserForm.controls.password.hasError('minlength')) {
-            <small class="field-error">
-              Password must be at least 8 characters.
-            </small>
-          }
-
-          @if (createUserForm.controls.password.hasError('maxlength')) {
-            <small class="field-error">
-              Password cannot exceed 72 characters.
-            </small>
-          }
-
+        @if (createUserForm.controls.password.hasError('required')) {
+        <small class="field-error">
+          Password is required.
+        </small>
         }
+      
+        @if (createUserForm.controls.password.hasError('minlength')) {
+        <small class="field-error">
+          Password must be at least 8 characters.
+        </small>
+        }
+      
+        @if (createUserForm.controls.password.hasError('maxlength')) {
+        <small class="field-error">
+          Password cannot exceed 72 characters.
+        </small>
+        }
+      
+        @if (createUserForm.controls.password.hasError('pattern')) {
+        <small class="field-error">
+          Password must contain at least one uppercase letter, one lowercase
+          letter, one number, and one special character.
+        </small>
+        }
+        }
+      </div>
 
+      <!-- Confirm Password -->
+      <div class="form-group">
+        <label for="confirmPassword">
+          Confirm Password
+        </label>
+      
+        <div class="password-input-wrapper">
+          <input id="confirmPassword" [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword"
+            placeholder="Confirm password" autocomplete="new-password" />
+      
+          <button type="button" class="password-toggle" (click)="showConfirmPassword = !showConfirmPassword" tabindex="-1">
+            <i [class]="showConfirmPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+        </div>
+      
+        @if (
+        createUserForm.controls.confirmPassword.touched &&
+        createUserForm.controls.confirmPassword.invalid
+        ) {
+        @if (createUserForm.controls.confirmPassword.hasError('required')) {
+        <small class="field-error">
+          Confirm password is required.
+        </small>
+        }
+        }
+      
+        @if (
+        createUserForm.controls.confirmPassword.touched &&
+        createUserForm.hasError('passwordMismatch')
+        ) {
+        <small class="field-error">
+          Passwords do not match.
+        </small>
+        }
       </div>
 
 

@@ -137,3 +137,25 @@ button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 45px;
+}
+
+.eye-button {
+  position: absolute;
+  right: -176px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: none !important;
+  padding: 0;
+  cursor: pointer;
+  font-size: 18px;
+  color:#000
+}

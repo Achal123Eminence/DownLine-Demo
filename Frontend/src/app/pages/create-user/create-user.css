@@ -90,7 +90,6 @@
   padding: 11px 20px;
   border-radius: 6px;
   border: none;
-  cursor: pointer;
   font-size: 14px;
   font-weight: 600;
 }
@@ -108,5 +107,39 @@
 .cancel-button:disabled,
 .submit-button:disabled {
   opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 45px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 18px;
+}
+
+.password-toggle:focus {
+  outline: none;
+}
+
+.submit-button {
+  cursor: pointer;
+}
+
+.submit-button:disabled {
   cursor: not-allowed;
 }
