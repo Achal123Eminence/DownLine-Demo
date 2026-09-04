@@ -5,6 +5,7 @@ import { Api } from '../../services/api';
 import { Header } from '../../shared/header/header';
 import { Footer } from '../../shared/footer/footer';
 import Swal from 'sweetalert2';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   imports: [ReactiveFormsModule, Header, Footer],
@@ -17,6 +18,7 @@ export class CreateUser {
   private fb = inject(FormBuilder);
   private api = inject(Api);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   isLoading = false;
   errorMessage = '';
@@ -131,8 +133,8 @@ export class CreateUser {
       0,
       [
         Validators.required,
-        Validators.min(0),
-        Validators.max(100),
+        // Validators.min(0),
+        // Validators.max(100),
         this.twoDecimalValidator.bind(this),
         this.commissionAvailableValidator.bind(this)
       ]
@@ -197,7 +199,10 @@ export class CreateUser {
           title: 'Success',
           timer: 1000,
           text: response.message || 'User created successfully',
-          confirmButtonText: 'OK'
+          confirmButtonText: 'OK',
+          customClass: {
+            popup: 'swal-font'
+          }
         }).then(() => {
           this.router.navigate(['/downline']);
         });
@@ -208,13 +213,17 @@ export class CreateUser {
         console.error('Create user error:', error);
 
         this.isLoading = false;
+        this.cdr.detectChanges();
 
         Swal.fire({
           icon: 'error',
           title: 'Error',
           timer: 1000,
           text: error.error?.message || 'Unable to create user. Please try again.',
-          confirmButtonText: 'OK'
+          confirmButtonText: 'OK',
+          customClass: {
+            popup: 'swal-font'
+          }
         });
       }
     });

@@ -140,22 +140,40 @@ button:disabled {
 
 .password-wrapper {
   position: relative;
+  width: 100%;
 }
 
 .password-wrapper input {
   width: 100%;
-  padding-right: 45px;
+  box-sizing: border-box;
+  padding: 11px 42px 11px 12px;
 }
 
 .eye-button {
   position: absolute;
-  right: -176px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  border: none;
-  background: none !important;
+
+  width: 24px;
+  height: 24px;
+
   padding: 0;
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  background: transparent !important;
+
+  color: #555;
+  font-size: 16px;
   cursor: pointer;
-  font-size: 18px;
-  color:#000
+}
+
+.eye-button:hover {
+  background: transparent !important;
+  color: #000;
 }

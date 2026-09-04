@@ -56,7 +56,10 @@ export class Login {
           title: 'Login Successful',
           timer: 1000,
           text: 'Welcome back!',
-          confirmButtonText: 'Continue'
+          confirmButtonText: 'Continue',
+          customClass: {
+            popup: 'swal-font'
+          }
         }).then(() => {
           this.router.navigate(['/downline']);
         });
@@ -72,7 +75,10 @@ export class Login {
           text:
             error.error?.message ||
             'Invalid email or password.',
-          confirmButtonText: 'Try Again'
+          confirmButtonText: 'Try Again',
+          customClass: {
+            popup: 'swal-font'
+          }
         });
       },
     });

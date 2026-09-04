@@ -131,7 +131,7 @@
             placeholder="Enter password" autocomplete="new-password" />
       
           <button type="button" class="password-toggle" (click)="showPassword = !showPassword" tabindex="-1">
-            <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            <i [class]="showPassword ? 'bi bi-eye' : 'bi bi-eye-slash'"></i>
           </button>
         </div>
       
@@ -177,7 +177,7 @@
             placeholder="Confirm password" autocomplete="new-password" />
       
           <button type="button" class="password-toggle" (click)="showConfirmPassword = !showConfirmPassword" tabindex="-1">
-            <i [class]="showConfirmPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            <i [class]="showConfirmPassword ? 'bi bi-eye' : 'bi bi-eye-slash'"></i>
           </button>
         </div>
       
@@ -290,7 +290,7 @@
             </small>
           }
 
-          @if (createUserForm.controls.commission.hasError('min')) {
+          <!-- @if (createUserForm.controls.commission.hasError('min')) {
             <small class="field-error">
               Commission cannot be less than 0%.
             </small>
@@ -300,7 +300,7 @@
             <small class="field-error">
               Commission cannot exceed 100%.
             </small>
-          }
+          } -->
 
           @if (createUserForm.controls.commission.hasError('decimalPlaces')) {
             <small class="field-error">
