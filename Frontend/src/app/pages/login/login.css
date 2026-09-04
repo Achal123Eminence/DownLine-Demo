@@ -17,6 +17,7 @@
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  color: #333;
 }
 
 .login-card h1 {
@@ -59,14 +60,14 @@ button {
   padding: 11px;
   border: none;
   border-radius: 5px;
-  background: #222;
+  background: #007ad0;
   color: white;
   font-size: 15px;
   cursor: pointer;
 }
 
 button:hover {
-  background: #000;
+  background: #0262a7;
 }
 
 .error {
@@ -122,15 +123,16 @@ button {
   padding: 11px;
   border: none;
   border-radius: 6px;
-  background: #222;
+  background: #007ad0;
   color: white;
   font-size: 15px;
   cursor: pointer;
+  font-weight: 600;
   transition: background 0.2s;
 }
 
 button:hover:not(:disabled) {
-  background: #000;
+  background: #0262a7;
 }
 
 button:disabled {

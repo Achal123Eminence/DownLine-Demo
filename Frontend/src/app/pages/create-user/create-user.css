@@ -18,11 +18,12 @@
 .page-header h1 {
   margin: 0 0 8px;
   font-size: 28px;
+  color: #333;
 }
 
 .page-header p {
   margin: 0;
-  color: #666;
+  color: #505050;
 }
 
 .form-container {
@@ -30,6 +31,7 @@
   border: 1px solid #e5e5e5;
   border-radius: 10px;
   padding: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
 .form-group {
@@ -41,6 +43,7 @@
 .form-group label {
   margin-bottom: 8px;
   font-weight: 600;
+  color: #333;
 }
 
 .form-group input {
@@ -51,6 +54,7 @@
   border-radius: 6px;
   font-size: 15px;
   outline: none;
+  color: #333;
 }
 
 .form-group input:focus {
@@ -101,7 +105,7 @@
 }
 
 .submit-button {
-  background: #222;
+  background: #007ad0;
   color: #fff;
 }
 
